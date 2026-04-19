@@ -2,10 +2,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
-// this class creates the main GUI for the gadget shop
+// this class creates the main window for the gadget shop
 public class GadgetShop extends JFrame
 {
-    // this ArrayList stores all gadgets added by the user
+    // list to store all gadgets
     private ArrayList<Gadget> gadgets;
 
     // text fields for user input
@@ -20,17 +20,17 @@ public class GadgetShop extends JFrame
     private JTextField downloadSizeField;
     private JTextField displayNumberField;
 
-    // text area to show output messages in the GUI
+    // area to show results in the GUI
     private JTextArea outputArea;
 
-    // constructor to create the gadget shop window
+    // constructor
     public GadgetShop()
     {
         gadgets = new ArrayList<Gadget>();
         makeFrame();
     }
 
-    // this method creates and sets up the whole GUI
+    // this method builds the whole GUI
     private void makeFrame()
     {
         setTitle("Gadget Shop");
@@ -84,7 +84,7 @@ public class GadgetShop extends JFrame
 
         add(fieldsPanel, BorderLayout.NORTH);
 
-        // panel for the buttons
+        // panel for buttons
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(2, 3));
 
@@ -104,14 +104,14 @@ public class GadgetShop extends JFrame
 
         add(buttonPanel, BorderLayout.CENTER);
 
-        // text area where results and messages are shown
+        // output area at the bottom
         outputArea = new JTextArea();
         outputArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(outputArea);
         scrollPane.setPreferredSize(new Dimension(800, 250));
         add(scrollPane, BorderLayout.SOUTH);
 
-        // action listeners for each button
+        // connect buttons to methods
         addMobileButton.addActionListener(e -> addMobile());
         addMP3Button.addActionListener(e -> addMP3());
         clearButton.addActionListener(e -> clearFields());
@@ -176,7 +176,7 @@ public class GadgetShop extends JFrame
         return Integer.parseInt(downloadSizeField.getText());
     }
 
-    // this method checks the display number entered by the user
+    // this method checks if the display number is valid
     private int getDisplayNumber()
     {
         int displayNumber = -1;
@@ -185,7 +185,6 @@ public class GadgetShop extends JFrame
         {
             int enteredNumber = Integer.parseInt(displayNumberField.getText());
 
-            // check if the number is inside the valid range
             if(enteredNumber >= 0 && enteredNumber < gadgets.size())
             {
                 displayNumber = enteredNumber;
@@ -196,21 +195,24 @@ public class GadgetShop extends JFrame
                     "Display number is out of range.",
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
+
+                System.out.println("ERROR: Display number is out of range.");
             }
         }
         catch(NumberFormatException e)
         {
-            // show error if the input is not an integer
             JOptionPane.showMessageDialog(this,
                 "Display number must be an integer.",
                 "Error",
                 JOptionPane.ERROR_MESSAGE);
+
+            System.out.println("ERROR: Display number must be an integer.");
         }
 
         return displayNumber;
     }
 
-    // this method creates a new Mobile object and adds it to the list
+    // this method creates a new mobile and adds it to the list
     private void addMobile()
     {
         try
@@ -225,15 +227,44 @@ public class GadgetShop extends JFrame
             gadgets.add(mobile);
 
             outputArea.append("Mobile added.\n");
-            System.out.println("Mobile added.\n");
+            System.out.println("Mobile added.");
         }
         catch(NumberFormatException e)
         {
-            // show error if numeric values are entered wrongly
             JOptionPane.showMessageDialog(this,
                 "Please enter valid values for price, weight and credit.",
                 "Error",
                 JOptionPane.ERROR_MESSAGE);
+
+            System.out.println("ERROR: Please enter valid values for price, weight and credit.");
+        }
+    }
+
+    // this method creates a new MP3 player and adds it to the list
+    private void addMP3()
+    {
+        try
+        {
+            String model = getModel();
+            double price = getPrice();
+            int weight = getWeight();
+            String size = getSizeValue();
+            int memory = getMemory();
+
+            MP3 mp3 = new MP3(model, price, weight, size, memory);
+            gadgets.add(mp3);
+
+            outputArea.append("MP3 player added.\n");
+            System.out.println("MP3 player added.");
+        }
+        catch(NumberFormatException e)
+        {
+            JOptionPane.showMessageDialog(this,
+                "Please enter valid values for price, weight and memory.",
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+
+            System.out.println("ERROR: Please enter valid values for price, weight and memory.");
         }
     }
 
@@ -252,16 +283,18 @@ public class GadgetShop extends JFrame
         displayNumberField.setText("");
     }
 
-    // this method displays all gadgets stored in the ArrayList
+    // this method displays all gadgets in the output area and CMD
     private void displayAll()
     {
         if(gadgets.size() == 0)
         {
             outputArea.append("No gadgets stored.\n");
+            System.out.println("No gadgets stored.");
         }
         else
         {
             outputArea.append("All gadgets:\n");
+            System.out.println("All gadgets:");
 
             for(int i = 0; i < gadgets.size(); i++)
             {
@@ -269,66 +302,37 @@ public class GadgetShop extends JFrame
 
                 outputArea.append("Display Number: " + i + "\n");
                 outputArea.append("Model: " + gadget.getModel() + "\n");
-                outputArea.append("Price: £" + gadget.getPrice() + "\n");
+                outputArea.append("Price: Â£" + gadget.getPrice() + "\n");
                 outputArea.append("Weight: " + gadget.getWeight() + "g\n");
                 outputArea.append("Size: " + gadget.getSize() + "\n");
 
-                System.out.println("Display Number: " + i + "\n");
-                System.out.println("Model: " + gadget.getModel() + "\n");
-                System.out.println("Price: £" + gadget.getPrice() + "\n");
-                System.out.println("Weight: " + gadget.getWeight() + "g\n");
-                System.out.println("Size: " + gadget.getSize() + "\n");
+                System.out.println("Display Number: " + i);
+                System.out.println("Model: " + gadget.getModel());
+                System.out.println("Price: Â£" + gadget.getPrice());
+                System.out.println("Weight: " + gadget.getWeight() + "g");
+                System.out.println("Size: " + gadget.getSize());
 
-                // if the gadget is a mobile, show the credit
+                // check if the gadget is a mobile or MP3
                 if(gadget instanceof Mobile)
                 {
                     Mobile mobile = (Mobile) gadget;
                     outputArea.append("Calling credit: " + mobile.getCredit() + " minutes\n");
-                    System.out.println("Calling credit: " + mobile.getCredit() + " minutes\n");
+                    System.out.println("Calling credit: " + mobile.getCredit() + " minutes");
                 }
-                // if the gadget is an MP3, show the memory
                 else if(gadget instanceof MP3)
                 {
                     MP3 mp3 = (MP3) gadget;
                     outputArea.append("Available memory: " + mp3.getMemory() + "\n");
-                    System.out.println("Available memory: " + mp3.getMemory() + "\n");
+                    System.out.println("Available memory: " + mp3.getMemory());
                 }
 
                 outputArea.append("\n");
-                System.out.println("\n");
+                System.out.println();
             }
         }
     }
 
-    // this method creates a new MP3 object and adds it to the list
-    private void addMP3()
-    {
-        try
-        {
-            String model = getModel();
-            double price = getPrice();
-            int weight = getWeight();
-            String size = getSizeValue();
-            int memory = getMemory();
-
-            MP3 mp3 = new MP3(model, price, weight, size, memory);
-            gadgets.add(mp3);
-            mp3.display();
-
-            outputArea.append("MP3 player added.\n");
-            System.out.println("MP3 player added.\n");
-        }
-        catch(NumberFormatException e)
-        {
-            // show error if numeric values are entered wrongly
-            JOptionPane.showMessageDialog(this,
-                "Please enter valid values for price, weight and memory.",
-                "Error",
-                JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    // this method makes a call using the selected mobile phone
+    // this method makes a call using a selected mobile phone
     private void makeCall()
     {
         int displayNumber = getDisplayNumber();
@@ -347,29 +351,31 @@ public class GadgetShop extends JFrame
 
                     mobile.makeCall(phoneNumber, duration);
                     outputArea.append("Call made from gadget " + displayNumber + "\n");
-                    System.out.println("Call made from gadget " + displayNumber + "\n");
+                    System.out.println("Call made from gadget " + displayNumber);
                 }
                 catch(NumberFormatException e)
                 {
-                    // show error if duration is not a number
                     JOptionPane.showMessageDialog(this,
                         "Duration must be an integer.",
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
+
+                    System.out.println("ERROR: Duration must be an integer.");
                 }
             }
             else
             {
-                // show error if the selected gadget is not a mobile
                 JOptionPane.showMessageDialog(this,
                     "Selected gadget is not a mobile phone.",
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
+
+                System.out.println("ERROR: Selected gadget is not a mobile phone.");
             }
         }
     }
 
-    // this method downloads music to the selected MP3 player
+    // this method downloads music to a selected MP3 player
     private void downloadMusic()
     {
         int displayNumber = getDisplayNumber();
@@ -387,24 +393,26 @@ public class GadgetShop extends JFrame
 
                     mp3.downloadMusic(downloadSize);
                     outputArea.append("Music downloaded to gadget " + displayNumber + "\n");
-                    System.out.println("Music downloaded to gadget " + displayNumber + "\n");
+                    System.out.println("Music downloaded to gadget " + displayNumber);
                 }
                 catch(NumberFormatException e)
                 {
-                    // show error if download size is not a number
                     JOptionPane.showMessageDialog(this,
                         "Download size must be an integer.",
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
+
+                    System.out.println("ERROR: Download size must be an integer.");
                 }
             }
             else
             {
-                // show error if the selected gadget is not an MP3 player
                 JOptionPane.showMessageDialog(this,
                     "Selected gadget is not an MP3 player.",
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
+
+                System.out.println("ERROR: Selected gadget is not an MP3 player.");
             }
         }
     }
